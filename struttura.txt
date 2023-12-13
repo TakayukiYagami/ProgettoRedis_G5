@@ -1,0 +1,13 @@
+# STRUTTURE DATI
+#     UTENTE:
+#         id_utente(num):username{(hash)
+#             DnD:bool
+#             Password:Hash
+#             Nome:str
+#             Cnome:str
+#         }
+#     CONTATTI_UTENTI:
+#         {id_utenti(num)_contatti:[contatto1-->username, contatto2, contattoN]}
+#     MESSAGGI:
+#         username1,username2:[str_mess]
+#         26 timestamp, 1 user, txt
