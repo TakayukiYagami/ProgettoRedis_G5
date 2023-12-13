@@ -1,17 +1,3 @@
-# STRUTTURE DATI
-#     UTENTE:
-#         id_utente(num):username{(hash)
-#             DnD:bool
-#             Password:Hash
-#             Nome:str
-#             Cnome:str
-#         }
-#     CONTATTI_UTENTI:
-#         {id_utenti(num)_contatti:[contatto1-->username, contatto2, contattoN]}
-#     MESSAGGI:
-#         {}
-
-
 def registrati(username: str, password: str) -> bool:  # CARLOTTA
     # l'utente passa username e password, il database viene interrogato per vedere se sono presenti
     # altre istanze
@@ -33,19 +19,29 @@ def trova_utenti(username: str) -> list:  # GABRIEL
     ...
 
 
-def aggiungi_utenti(username_contatto: str, id_utente) -> bool:  # CARLOATTA
+def aggiungi_utenti(username_contatto: str, id_utente: str) -> bool:  # CARLOATTA
     # viene passato un username e viene aggiunto alla lista dei contatti.
     # restituisce vero se tutto va a buon fine
     ...
 
 
-def cambia_stato(id_utente: str) -> bool:  # GABRIEL
+def cambia_stato(username: str) -> bool:  # GABRIEL
     # tramite hset, si modifica lo stato del non disturbare
     # retituisce True se va tutto a buon fine
     ...
 
 
-def messaggi(mittente: str, destinatario: str, testo: str) -> bool:
+def ottieni_stato(username_destinatario: str) -> bool:  # GABRIEL
+    # dato un username, restituire lo stato, False se è occupato
+    ...
+
+
+def messaggi(mittente: str, destinatario: str, testo: str) -> bool:  # BASE
     # l'untente inserisce il destinatario, ed il testo.
     # restituisce True se va tutto bene
+    ...
+
+
+def leggi_messaggi(mittente: str, destinatario: str) -> list:  # CARLOTTA
+    # restituisce tutti i valori da tra due utenti
     ...
