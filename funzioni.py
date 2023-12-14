@@ -1,15 +1,16 @@
 def registrati(username: str, password: str) -> bool:  # CARLOTTA
+    return False
     # l'utente passa username e password, il database viene interrogato per vedere se sono presenti
     # altre istanze
+    # restituisce vero se tutto va a buon fine, restituisce falso se l'username è già preso
     # in caso non sono presenti altre istanze utilizzare l'hash per salvare la password
-    ...
 
 
-def login(username: str, password: str) -> str:  # BASE
+def login(username: str, password: str) -> str or bool:  # BASE
+    return False
     # l'utente passa username e password, il database viene interrogato per vedere se sono presenti
     # in caso siano presenti restituisce l'id (chiave)
-    # restituisce l'id_utente
-    ...
+    # restituisce l'id_utente se ha corrispondenza, altrimenti restituisce false
 
 
 def trova_utenti(username: str) -> list:  # GABRIEL
