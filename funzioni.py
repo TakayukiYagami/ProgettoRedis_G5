@@ -1,10 +1,19 @@
-def registrati(username: str, password: str) -> bool:  # CARLOTTA
-    return False
-    # l'utente passa username e password, il database viene interrogato per vedere se sono presenti
-    # altre istanze
-    # restituisce vero se tutto va a buon fine, restituisce falso se l'username è già preso
-    # in caso non sono presenti altre istanze utilizzare l'hash per salvare la password
+def registrati(username: str, password: str, nome: str, cognome: str, redis_conn: redis.Redis):
+    # l'utente passa username e password, il database viene interrogato per vedere se sono presenti altre istanze
+    # fatto senza hash per la password perchè non richiesto dal professore
+    chiave_utente = f'UTENTE:{username}'
+    
+    if redis_conn.exists(chiave_utente):
+        print(f"L'utente {username} esiste già")
+        return False
 
+    redis_conn.hset(chiave_utente, 'DnD', 'False') #impostato su False di default
+    redis_conn.hset(chiave_utente, 'Password', password)
+    redis_conn.hset(chiave_utente, 'Nome', nome)
+    redis_conn.hset(chiave_utente, 'Cognome', cognome)
+
+    print(f"Utente {username} registrato con successo.")
+    return True
 
 def login(username: str, password: str) -> str or bool:  # BASE
     return False
