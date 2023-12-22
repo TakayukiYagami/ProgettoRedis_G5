@@ -1,3 +1,5 @@
+import redis
+
 def registrati(username: str, password: str, nome: str, cognome: str, redis_conn: redis.Redis):
     # l'utente passa username e password, il database viene interrogato per vedere se sono presenti altre istanze
     # fatto senza hash per la password perchè non richiesto dal professore
