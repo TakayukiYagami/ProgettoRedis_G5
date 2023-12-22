@@ -29,10 +29,26 @@ def trova_utenti(username: str) -> list:  # GABRIEL
     ...
 
 
-def aggiungi_utenti(username_contatto: str, id_utente: str) -> bool:  # CARLOATTA
+def aggiungi_utente(username_utente: str, username_contatto: str, redis_conn: redis.Redis) -> bool:  
     # viene passato un username e viene aggiunto alla lista dei contatti.
     # restituisce vero se tutto va a buon fine
-    ...
+    chiave_contatti = f'CONTATTI_UTENTE:{username_utente}'
+
+    chiave_utente = f'UTENTE:{username_utente}' 
+    if not redis_conn.exists(chiave_utente): #utente  principale esiste? 
+        print(f"L'utente {username_utente} non esiste.")
+        return False
+
+    chiave_contatto = f'UTENTE:{username_contatto}' #utente da aggiungere esiste?
+    if not redis_conn.exists(chiave_contatto):
+        print(f"L'utente {username_contatto} non esiste.")
+        return False
+
+    redis_conn.sadd(chiave_contatti, username_contatto) #sadd gestisce già caso in cui siano già amici
+
+    print(f"{username_contatto} è stato aggiunto alla lista dei contatti di {username_utente}.")
+    return True
+
 
 
 def cambia_stato(username: str, redis_conn: redis.Redis) -> bool: 
@@ -56,10 +72,23 @@ def cambia_stato(username: str, redis_conn: redis.Redis) -> bool:
 
 
 
-
-def ottieni_stato(username_destinatario: str) -> bool:  # GABRIEL
+def ottieni_stato(username: str, redis_conn: redis.Redis) -> bool: 
     # dato un username, restituire lo stato, False se è occupato
-    ...
+    chiave_utente = f'UTENTE:{username}'
+
+    if not redis_conn.exists(chiave_utente):
+        print(f"L'utente {username} non esiste.")
+        return False
+
+    stato = redis_conn.hget(chiave_utente, 'DnD')
+
+    if stato == 'True':
+        print(f"Lo stato dell'utente {username} è: Occupato")
+        return False
+    
+    else:
+        print(f"Lo stato dell'utente {username} è: Disponibile")
+        return True
 
 
 def messaggi(mittente: str, destinatario: str, testo: str) -> bool:  # BASE
