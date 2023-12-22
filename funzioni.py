@@ -35,10 +35,26 @@ def aggiungi_utenti(username_contatto: str, id_utente: str) -> bool:  # CARLOATT
     ...
 
 
-def cambia_stato(username: str) -> bool:  # GABRIEL
+def cambia_stato(username: str, redis_conn: redis.Redis) -> bool: 
     # tramite hset, si modifica lo stato del non disturbare
-    # retituisce True se va tutto a buon fine
-    ...
+    # restituisce True se va tutto a buon fine
+    chiave_utente = f'UTENTE:{username}'
+
+    if not redis_conn.exists(chiave_utente):
+        print(f"L'utente {username} non esiste.")
+        return False
+
+    stato_corrente = redis_conn.hget(chiave_utente, 'DnD')
+    if stato_corrente == b'True':
+        nuovo_stato = 'False'
+    else:
+        nuovo_stato = 'True'
+    redis_conn.hset(chiave_utente, 'DnD', nuovo_stato)
+
+    print(f"Lo stato di non disturbare per l'utente {username} è stato cambiato a {nuovo_stato}.")
+    return True
+
+
 
 
 def ottieni_stato(username_destinatario: str) -> bool:  # GABRIEL
