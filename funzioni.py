@@ -1,4 +1,5 @@
 import redis
+import time
 
 
 def registrati(username: str, password: str, nome: str, cognome: str, redis_conn: redis.Redis):
@@ -20,12 +21,8 @@ def registrati(username: str, password: str, nome: str, cognome: str, redis_conn
 
 
 def login(username: str, password: str, redis_conn: redis.Redis) -> str or bool:  # BASE
-    print(username)
-    print(password)
     chiave_utente = f'UTENTE:{username}'
-    print(chiave_utente)
     password_redis = redis_conn.hget(chiave_utente, 'Password')
-    print(password_redis)
     if password_redis == password:
         return username
     # l'utente passa username e password, il database viene interrogato per vedere se sono presenti
@@ -47,7 +44,7 @@ def aggiungi_utente(username_utente: str, username_contatto: str, redis_conn: re
     chiave_contatti = f'CONTATTI_UTENTE:{username_utente}'
 
     chiave_utente = f'UTENTE:{username_utente}'
-    if not redis_conn.exists(chiave_utente):  # utente  principale esiste?
+    if not redis_conn.exists(chiave_utente):  # utente principale esiste?
         print(f"L'utente {username_utente} non esiste.")
         return False
 
@@ -101,10 +98,31 @@ def ottieni_stato(username: str, redis_conn: redis.Redis) -> bool:
         return True
 
 
-def messaggi(mittente: str, destinatario: str, testo: str) -> bool:  # BASE
+def ottieni_contatti(username: str, redis_conn: redis.Redis) -> list:
+    # funzione che dato un userame trova i suoi contati
+    # restituisce una lista
+    chiave = f'CONTATTI_UTENTE:{username}'
+    if redis_conn.exists(chiave):
+        valori = redis_conn.smembers(chiave)
+        return list(valori)
+    else:
+        return []
+
+
+def messaggi(mittente: str, destinatario: str, testo: str, redis_conn: redis.Redis) -> int:  # BASE
     # l'untente inserisce il destinatario, ed il testo.
-    # restituisce True se va tutto bene
-    ...
+    # restituisce 2 se va tutto bene, restituisce 1 se l'utente è occupato
+    if not ottieni_stato(destinatario, redis_conn):
+        return 1
+    chiave = sorted([mittente, destinatario])
+    print(chiave)
+    testo_metadati = str(int(time.time())) + str(chiave.index(mittente)) + testo
+    print(testo_metadati)
+    chiave_esiste = redis_conn.exists(f'{chiave[0]}{chiave[1]}')
+    if not chiave_esiste:
+        redis_conn.rpush(f'{mittente}{destinatario}', testo_metadati)
+    redis_conn.rpush(f'{mittente}{destinatario}', testo_metadati)
+    return 2
 
 
 def leggi_messaggi(mittente: str, destinatario: str) -> list:  # CARLOTTA
