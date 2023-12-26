@@ -1,9 +1,29 @@
 import funzioni
+import redis
 
 # Assuming id_utente is initially set to None or some default value
 id_utente = 1
 
 if __name__ == '__main__':
+
+    r = redis.Redis(
+                host= "redis-10797.c55.eu-central-1-1.ec2.cloud.redislabs.com",
+                port=10797,
+                password="yGoGfZmUmeAy90OLyd27DoVDyXgeq95L",
+                decode_responses=True
+                )
+    
+
+#esempi per testare le funzioni poi da cancellare
+    funzioni.registrati("lucerna23", "cantolibero", "Lucio", "Battisti", r)
+    funzioni.aggiungi_utente("lucabarbetta", "lucerna23", r)
+    funzioni.cambia_stato("giovannithebest", r)
+    funzioni.ottieni_stato("giovannithebest", r)
+
+
+#IMPORTANTE
+#qui sotto manca il caso in cui si vuole ottenere lo stato dell'altro utente (se DND o no)
+            
     while True:
         print('Benvenuti nel sistema di messaggistica di redis')
         print('Seleziona una delle seguenti opzioni:')
