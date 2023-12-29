@@ -117,6 +117,7 @@ def leggi_messaggi(mittente: str, destinatario: str, redis_conn: redis.Redis) ->
     # restituisce tutti i valori da tra due utenti
     # ogni elemento della lista è un testo mandato da un utente
     # restituisce False se non trova la chat tra i due utenti
+<<<<<<< HEAD
 
     chiave = f'{mittente}{destinatario}'
     chiave_esiste = redis_conn.exists(chiave)
@@ -140,3 +141,6 @@ def leggi_messaggi(mittente: str, destinatario: str, redis_conn: redis.Redis) ->
 
     return result
 
+=======
+    ...
+>>>>>>> 95b61bf99b5c35b93a860801ea6d0f1953cf3bb4

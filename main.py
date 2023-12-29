@@ -126,4 +126,8 @@ if __name__ == '__main__':
                         break
                     print('Username o Password sbagliati')
                     break
+<<<<<<< HEAD
     r.close()
+=======
+    r.close()
+>>>>>>> 95b61bf99b5c35b93a860801ea6d0f1953cf3bb4
