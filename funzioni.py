@@ -32,13 +32,6 @@ def login(username: str, password: str, redis_conn: redis.Redis) -> str or bool:
     return False
 
 
-def trova_utenti(username: str, redis_conn: redis.Redis) -> list:  # GABRIEL
-    # l'utente passe un username, anche parziale, e verranno restituiti tutti gli username
-    # anche parzialmente compatibili
-    # restutuisce una lista di username o una lista vuota se non trova nulla
-    ...
-
-
 def aggiungi_utente(username_utente: str, username_contatto: str, redis_conn: redis.Redis) -> bool:
     # viene passato un username e viene aggiunto alla lista dei contatti.
     # restituisce vero se tutto va a buon fine
