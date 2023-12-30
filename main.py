@@ -1,3 +1,5 @@
+import threading
+
 import funzioni
 import redis
 
@@ -15,6 +17,8 @@ if __name__ == '__main__':
         print('Benvenuti nel sistema di messaggistica di redis')
         print('Seleziona una delle seguenti opzioni:')
         if id_utente:
+            thread_notifiche = threading.Thread(target=funzioni.hai_una_nuova_notifica, args=(id_utente, r))
+            thread_notifiche.start()
             while 1:
                 print('1. Esci')
                 print('2. Cambia stato')

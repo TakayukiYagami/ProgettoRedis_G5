@@ -59,7 +59,7 @@ def cambia_stato(username: str, redis_conn: redis.Redis) -> str or bool:
         return False
 
     stato_corrente = redis_conn.hget(chiave_utente, 'DnD')
-    if stato_corrente == b'True':
+    if stato_corrente == 'True':
         nuovo_stato = 'False'
     else:
         nuovo_stato = 'True'
@@ -98,15 +98,13 @@ def messaggi(mittente: str, destinatario: str, testo: str, redis_conn: redis.Red
     if not ottieni_stato(destinatario, redis_conn):
         return 1
     chiave = sorted([mittente, destinatario])
-    chiave_str=f'{chiave[0]}{chiave[1]}'
+    chiave_str = f'{chiave[0]}{chiave[1]}'
     print(chiave)
-    # creazione del testo composto da: 26 caratteri relativi al timestamp, 1 carattere relativo alla posizione sulla lista
+    # creazione del testo composto da: 11 caratteri relativi al timestamp, 1 carattere relativo alla posizione sulla lista
     # del mittente e N caratteri desitinati al testo
     testo_metadati = str(int(time.time())) + str(chiave.index(mittente)) + testo
-    chiave_esiste = redis_conn.exists(chiave_str)
-    if not chiave_esiste:
-        redis_conn.rpush(chiave_str, testo_metadati)
     redis_conn.rpush(chiave_str, testo_metadati)
+    redis_conn.publish(f'{chiave_str}:set', f'Nuovo messaggio inviato da parte di {mittente}')
     return 2
 
 
@@ -116,7 +114,7 @@ def leggi_messaggi(mittente: str, destinatario: str, redis_conn: redis.Redis) ->
     # restituisce False se non trova la chat tra i due utenti
 
     chiave = sorted([mittente, destinatario])
-    chiave_str=f'{chiave[0]}{chiave[1]}'
+    chiave_str = f'{chiave[0]}{chiave[1]}'
     chiave_esiste = redis_conn.exists(chiave_str)
     pos_mittente = chiave.index(mittente)
     if not chiave_esiste:
@@ -133,3 +131,22 @@ def leggi_messaggi(mittente: str, destinatario: str, redis_conn: redis.Redis) ->
         messaggio_formattato = f"{prefisso} {testo}"
         result.append(messaggio_formattato)
     return result
+
+
+def hai_una_nuova_notifica(id_utente: str, redis_conn: redis.Redis):
+    contatti = ottieni_contatti(id_utente, redis_conn)
+    contatti_chat = []
+    prova = redis_conn.pubsub()
+
+    for contatto in contatti:
+        chiave = sorted([id_utente, contatto])
+        chiave_str = f'{chiave[0]}{chiave[1]}'
+        if redis_conn.exists(chiave_str):
+            contatti_chat.append(chiave_str)
+
+    for chat in contatti_chat:
+        prova.psubscribe(f'{chat}:set')
+
+    for notifica in prova.listen():
+        if notifica['type'] == 'pmessage' and id_utente not in notifica['data']:
+            print(notifica['data'])
