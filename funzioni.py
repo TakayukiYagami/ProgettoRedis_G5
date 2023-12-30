@@ -32,11 +32,28 @@ def login(username: str, password: str, redis_conn: redis.Redis) -> str or bool:
     return False
 
 
-def trova_utenti(username: str, redis_conn: redis.Redis) -> list:  # GABRIEL
-    # l'utente passe un username, anche parziale, e verranno restituiti tutti gli username
-    # anche parzialmente compatibili
-    # restutuisce una lista di username o una lista vuota se non trova nulla
-    ...
+
+
+def trova_utenti(username: str, redis_conn: redis.Redis) -> list:
+    risultati = []
+
+    # Otteniamo tutti gli utenti memorizzati in Redis
+    tutti_utenti = redis_conn.keys('*')
+
+    # Iteriamo attraverso gli utenti per trovare quelli che contengono l'username fornito
+    for utente_key in tutti_utenti:
+        utente = utente_key.decode('utf-8')
+        if username.lower() in utente.lower():
+            risultati.append(utente)
+
+    return risultati
+
+# Esempio di utilizzo:
+# Assumiamo che tu abbia già una connessione Redis stabilita (redis_conn)
+# e che ci siano alcuni utenti memorizzati
+username_trovati = trova_utenti("luca", redis_conn)
+print(username_trovati)
+
 
 
 def aggiungi_utente(username_utente: str, username_contatto: str, redis_conn: redis.Redis) -> bool:
