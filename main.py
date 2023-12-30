@@ -1,7 +1,7 @@
 import funzioni
 import redis
 
-id_utente = 'lucabarbetta'
+id_utente = ''
 
 if __name__ == '__main__':
 

@@ -71,17 +71,11 @@ def ottieni_stato(username: str, redis_conn: redis.Redis) -> bool:
     chiave_utente = f'UTENTE:{username}'
 
     if not redis_conn.exists(chiave_utente):
-        print(f"L'utente {username} non esiste.")
         return False
-
     stato = redis_conn.hget(chiave_utente, 'DnD')
-
     if stato == 'True':
-        print(f"Lo stato dell'utente {username} è: Occupato")
         return False
-
     else:
-        print(f"Lo stato dell'utente {username} è: Disponibile")
         return True
 
 
