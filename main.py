@@ -1,8 +1,7 @@
 import funzioni
 import redis
 
-id_utente = ''
-
+id_utente = 'lucabarbetta'
 if __name__ == '__main__':
 
     r = redis.Redis(
@@ -110,7 +109,9 @@ if __name__ == '__main__':
                 while 1:
                     user = input('Inserisci username: ')
                     pw = input('Inserisci password: ')
-                    out = funzioni.registrati(username=user, password=pw, redis_conn=r)
+                    nome = input('Inserisci nome: ')
+                    cognome = input('Inserisci cognome: ')
+                    out = funzioni.registrati(username=user, password=pw, nome=nome, cognome=cognome, redis_conn=r)
                     if out:
                         print('Registrazione avvenuta con successo')
                         break
@@ -126,4 +127,3 @@ if __name__ == '__main__':
                         break
                     print('Username o Password sbagliati')
                     break
-    r.close()

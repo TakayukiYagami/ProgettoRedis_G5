@@ -1,5 +1,6 @@
 import redis
 import time
+from datetime import datetime
 
 
 def registrati(username: str, password: str, nome: str, cognome: str, redis_conn: redis.Redis):
@@ -49,7 +50,7 @@ def aggiungi_utente(username_utente: str, username_contatto: str, redis_conn: re
     return True
 
 
-def cambia_stato(username: str, redis_conn: redis.Redis) -> bool:
+def cambia_stato(username: str, redis_conn: redis.Redis) -> str or bool:
     # tramite hset, si modifica lo stato del non disturbare
     # restituisce True se va tutto a buon fine
     chiave_utente = f'UTENTE:{username}'
@@ -97,13 +98,15 @@ def messaggi(mittente: str, destinatario: str, testo: str, redis_conn: redis.Red
     if not ottieni_stato(destinatario, redis_conn):
         return 1
     chiave = sorted([mittente, destinatario])
+    chiave_str=f'{chiave[0]}{chiave[1]}'
+    print(chiave)
     # creazione del testo composto da: 26 caratteri relativi al timestamp, 1 carattere relativo alla posizione sulla lista
     # del mittente e N caratteri desitinati al testo
     testo_metadati = str(int(time.time())) + str(chiave.index(mittente)) + testo
-    chiave_esiste = redis_conn.exists(f'{chiave[0]}{chiave[1]}')
+    chiave_esiste = redis_conn.exists(chiave_str)
     if not chiave_esiste:
-        redis_conn.rpush(f'{mittente}{destinatario}', testo_metadati)
-    redis_conn.rpush(f'{mittente}{destinatario}', testo_metadati)
+        redis_conn.rpush(chiave_str, testo_metadati)
+    redis_conn.rpush(chiave_str, testo_metadati)
     return 2
 
 
@@ -111,4 +114,22 @@ def leggi_messaggi(mittente: str, destinatario: str, redis_conn: redis.Redis) ->
     # restituisce tutti i valori da tra due utenti
     # ogni elemento della lista è un testo mandato da un utente
     # restituisce False se non trova la chat tra i due utenti
-    ...
+
+    chiave = sorted([mittente, destinatario])
+    chiave_str=f'{chiave[0]}{chiave[1]}'
+    chiave_esiste = redis_conn.exists(chiave_str)
+    pos_mittente = chiave.index(mittente)
+    if not chiave_esiste:
+        return False
+    messaggi = redis_conn.lrange(chiave_str, 0, -1)
+    result = []
+    for messaggio in messaggi:
+        timestamp = messaggio[:10]
+        testo = messaggio[11:]
+        if int(messaggio[10]) == pos_mittente:
+            prefisso = f"{datetime.utcfromtimestamp(int(timestamp))}>"  # messaggio inviato
+        else:
+            prefisso = f"{datetime.utcfromtimestamp(int(timestamp))}<"  # messaggio ricevuto
+        messaggio_formattato = f"{prefisso} {testo}"
+        result.append(messaggio_formattato)
+    return result
